@@ -1,0 +1,2 @@
+# Plot a set of data point with csv format
+gnuplot -p -e "set datafile separator ','; plot 'cleaned.csv' using 1:2 with points

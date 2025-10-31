@@ -1,0 +1,9 @@
+# Command to save last shell command to "commands" file
+echo "!!:p" >> commands
+
+# Commands to create summary of how many times each feature was used in training
+./linear_reg < data | head -n -8 | awk -F'[, ]' '{for(i=1;i<=NF;i++) if(==temp_feture:) count[]++} END{for (v in count) print v, count[v]}' | sort -n
+
+./linear_reg < data | grep -o 'temp_feture: [0-9.]\+' | cut -d' ' -f2 | sort | uniq -c | sort -nr
+
+./linear_reg < data | sed -n 's/.*temp_feture: \({0-9.]\+).*/\1/p' | sort | uniq -c | sort -nr
