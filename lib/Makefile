@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -I../include
 AR = ar rcs
 
-SRC = random.c
+SRC = random.c io.c
 OBJ = $(SRC:.c=.o)
 TARGET = libml.a
 
