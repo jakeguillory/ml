@@ -1,4 +1,4 @@
-SUBDIRS = lib linear_reg
+SUBDIRS = lib linear_reg perceptron
 
 .PHONY: all clean debug release
 

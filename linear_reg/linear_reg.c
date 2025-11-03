@@ -23,7 +23,7 @@ void train(Model *model, double *features, double *labels, int num_lines,
     square_trick(model, temp_feature, temp_label, learning_rate);
     // Uncommet below to print progress
     printf(
-        "int: %d, temp_feture: %lf, temp_label: %lf, bias: %lf, weight: %lf\n",
+        "int: %d, temp_feature: %lf, temp_label: %lf, bias: %lf, weight: %lf\n",
         random_int, temp_feature, temp_label, model->bias, model->weight);
     // Uncomment below to watch progress
     // sleep(1);
