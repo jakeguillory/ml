@@ -1,5 +1,5 @@
-#ifndef LINEAR_REG_H
-#define LINEAR_REG_H
+#ifndef LIN_REG_H
+#define LIN_REG_H
 
 #include <stddef.h>
 
@@ -14,4 +14,4 @@ void square_trick(Model *model, double feature, double label,
 void train(Model *model, double *features, double *labels, int num_lines,
            double learning_rate, int epochs);
 
-#endif // LINEAR_REG_H
+#endif // LIN_REG_H

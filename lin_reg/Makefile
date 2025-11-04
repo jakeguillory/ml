@@ -4,9 +4,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra -I../include
 LDFLAGS = -L../lib -lml
 
-SRC = main.c linear_reg.c
+SRC = main.c lin_reg.c
 OBJ = $(SRC:.c=.o)
-TARGET = linear_reg
+TARGET = lin_reg
 
 ifeq ($(MODE),debug)
   CFLAGS += -g

@@ -1,10 +1,9 @@
-#include "linear_reg.h"
 #include "io.h"
+#include "lin_reg.h"
 #include "random.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 
 int main(int argc, char *argv[]) {
 
@@ -15,16 +14,17 @@ int main(int argc, char *argv[]) {
 
   Args args;
   if (!parse_args(argc, argv, &args)) {
-      fprintf(stderr, "Usage: %s [-i input] [-o output] [-e epochs] [-l learning_rate]\n", argv[0]);
+    fprintf(stderr,
+            "Usage: %s [-i input] [-o output] [-e epochs] [-l learning_rate]\n",
+            argv[0]);
   }
 
   FILE *in = open_input_or_stdin(args.input_path);
   FILE *out = open_output_or_stdout(args.output_path);
 
   if (!in || !out) {
-      fprintf(stderr, "error opening files.\n");
+    fprintf(stderr, "error opening files.\n");
   }
-
 
   // Take in data and put into arrays
   int num_lines;

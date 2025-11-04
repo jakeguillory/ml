@@ -1,4 +1,4 @@
-#include "linear_reg.h"
+#include "lin_reg.h"
 #include "random.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -29,5 +29,3 @@ void train(Model *model, double *features, double *labels, int num_lines,
     // sleep(1);
   }
 }
-
-

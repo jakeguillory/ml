@@ -1,8 +1,8 @@
 #include "perceptron.h"
 #include "random.h"
+#include <math.h> // fabs()
 #include <stddef.h>
 #include <stdio.h>
-#include <math.h> // fabs()
 
 void perceptron_trick(Model *model, double temp_feature_a,
                       double temp_feature_b, int temp_label,

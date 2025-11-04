@@ -4,9 +4,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra -I../include
 LDFLAGS = -L../lib -lml -lm
 
-SRC = main.c perceptron.c
+SRC = main.c log_reg.c
 OBJ = $(SRC:.c=.o)
-TARGET = perceptron
+TARGET = log_reg
 
 ifeq ($(MODE),debug)
   CFLAGS += -g
