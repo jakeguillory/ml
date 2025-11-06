@@ -1,4 +1,4 @@
-SUBDIRS = lib lin_reg perceptron log_reg
+SUBDIRS = lib lin_reg perceptron log_reg naive
 
 .PHONY: all clean debug release
 

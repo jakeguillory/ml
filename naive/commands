@@ -1,0 +1,20 @@
+
+# use awk to clean out internal parentheses and redirect to cleaned.csv
+
+awk -v RS='"[[:space:]]*,[[:space:]]*"' -v ORS=',' 'NR%2{gsub(/\n/, " "); gsub(/""/, "\""); gsub(/^"|"$|,$/, ""); print $0; next} {print $0}' emails.csv > cleaned.csv
+
+# does the same thing with csvformat
+
+csvformat -T emails.csv | sed 's/\t/,/g' > clean.csv
+
+
+# Further simplifies
+
+cat clean.csv \
+| tr '[:upper:]' '[:lower:]' \
+| sed 's/[^a-z0-9 ,]/ /g' \
+| tr -s ' ' \
+> clean_simple.csv
+
+
+
