@@ -18,6 +18,7 @@ bool parse_args(int argc, char **argv, Args *args) {
   args->output_path = NULL;
   args->epochs = 1000;
   args->learning_rate = 0.01;
+  args->string = NULL;
 
   for (int i = 1; i < argc; i++) {
     if ((strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--input") == 0) &&
@@ -31,6 +32,10 @@ bool parse_args(int argc, char **argv, Args *args) {
                 strcmp(argv[i], "--epochs") == 0) &&
                i + 1 < argc) {
       args->epochs = atoi(argv[++i]);
+    } else if ((strcmp(argv[i], "-s") == 0 ||
+                strcmp(argv[i], "--string") == 0) &&
+               i + 1 < argc) {
+      args->string = argv[++i];
     } else if ((strcmp(argv[i], "-l") == 0 ||
                 strcmp(argv[i], "--learning_rate") == 0) &&
                i + 1 < argc) {

@@ -9,6 +9,7 @@ typedef struct {
   const char *output_path;
   int epochs;
   double learning_rate;
+  const char *string;
 } Args;
 
 bool read_doubles(FILE *fp, double *buf, int n);
