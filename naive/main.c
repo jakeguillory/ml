@@ -8,104 +8,94 @@
 #include <unistd.h>
 #include <math.h>
 
-#define MAX_WORD_LENGTH 50
-#define MAX_TEST_STRING_LENGTH 4096
-#define MAX_TEST_STRING_WORDS 100
+#define MAX_WORD_LENGTH          50
+#define MAX_TEST_STRING_LENGTH   4096
+#define MAX_TEST_STRING_WORDS    100
 
 int main(int argc, char *argv[]) {
-
-  // Handle arguments and files
+  
   Args args;
+
   if (!parse_args(argc, argv, &args)) {
     fprintf(stderr, "Usage: %s [-i input] [-o output] [-s string] \n", argv[0]);
+    return EXIT_FAILURE;
   }
 
   FILE *in = open_input_or_stdin(args.input_path);
   FILE *out = open_output_or_stdout(args.output_path);
 
   if (!in || !out) {
-    fprintf(stderr, "error opening files.\n");
+    fprintf(stderr, "Error: Could not open input or output.\n");
+    return EXIT_FAILURE;
   }
 
-  // Take in data, process, and put into Model
-  int num_lines;
-  fscanf(in, "%d", &num_lines);
+  int vocab_size;
+  if (fscanf(in, "%d", &vocab_size) !=1) {
+      fprintf(stderr, "Error: Failed to read vocabulary size. \n");
+      safe_close(in);
+      safe_close(out);
+      return EXIT_FAILURE;
+  }
 
-  // The following three arrays are the "Model"
-  char dictionary_words[num_lines][MAX_WORD_LENGTH];
-  int spam_count[num_lines];
-  int ham_count[num_lines];
+  char dictionary[vocab_size][MAX_WORD_LENGTH];
+  int spam_count[vocab_size];
+  int ham_count[vocab_size];
 
-  for (int i = 0; i < num_lines; i++)
-    fscanf(in, "%49s %d %d", dictionary_words[i], &spam_count[i],
+  for (int i = 0; i < vocab_size; i++)
+    fscanf(in, "%49s %d %d", dictionary[i], &spam_count[i],
            &ham_count[i]);
 
 
 
-  // Parse test string and put words iinto test_String_words
+  // Tokenize input string
   char *token;
-  const char delimiters[] = " .,:!?\n";
-  char test_string_words[MAX_TEST_STRING_WORDS][MAX_WORD_LENGTH];
+  const char *delimiters = " .,:!?\n";
+  char test_words[MAX_TEST_STRING_WORDS][MAX_WORD_LENGTH];
   int word_count = 0;
 
   token = strtok(args.string, delimiters);
-  while (token != NULL && word_count < MAX_TEST_STRING_WORDS) {
+  while (token && word_count < MAX_TEST_STRING_WORDS) {
     to_lowercase(token);
-    strncpy(test_string_words[word_count], token, MAX_WORD_LENGTH - 1);
-    test_string_words[word_count][MAX_WORD_LENGTH - 1] = '\0';
+    strncpy(test_words[word_count], token, MAX_WORD_LENGTH - 1);
+    test_words[word_count][MAX_WORD_LENGTH - 1] = '\0';
     word_count++;
     token = strtok(NULL, delimiters);
   }
 
 
 
-  // Calculate naive bayes
-  double total_spam_count = 1367.0;
-  double total_ham_count = 4359.0;
-  double prior_spam = total_spam_count / (total_spam_count + total_ham_count);    // Should read in instead of hard coding
-  double prior_ham = 1 - prior_spam;
-  double spam_probability = 0.0;
-  double ham_probability = 0.0;
-  double alpha = 1.0; // Laplace smoothing parameter to avoid division by zero
+  // Model Numbers and Parameters
+  double total_spam = 1367.0;
+  double total_ham =  4359.0;
+  double prior_spam = total_spam / (total_spam + total_ham);    
+  double prior_ham =  1 - prior_spam;
+  double alpha =      1.0; 
 
-  spam_probability += log(prior_spam);
-  ham_probability += log(prior_ham);
+  // Calculate Log Probabilities
+  double log_spam = log(prior_spam);
+  double log_ham = log(prior_ham);
   
   for (int word = 0; word < word_count; word++) {
-      int found = 0;
-      for (int i = 0; i < num_lines; i++) {
-	  if (strcmp(test_string_words[word], dictionary_words[i]) ==0) {
-	      double p_word_given_spam = (spam_count[i] + alpha) / (total_spam_count + alpha * num_lines);
-	      double p_word_given_ham = (ham_count[i] + alpha) / (total_ham_count + alpha * num_lines);
-	      spam_probability += log(p_word_given_spam);
-	      ham_probability += log(p_word_given_ham);
-	      found = 1;
+      for (int i = 0; i < vocab_size; i++) {
+	  if (strcmp(test_words[word], dictionary[i]) ==0) {
+	      double p_spam = (spam_count[i] + alpha) / (total_spam + alpha * vocab_size);
+	      double p_ham = (ham_count[i] + alpha) / (total_ham + alpha * vocab_size);
+	      log_spam += log(p_spam);
+	      log_ham += log(p_ham);
 	      break;
 	  }
       }
   } 
 
-  fprintf(stdout, "Probability of Spam: %lf\n", (spam_probability / (spam_probability + ham_probability)));
-
-  // Print words from input string (debugging)
-  //fprintf(stdout, "List of Input Test String Words: \n");
-  //for (int i = 0; i < word_count; i++)
-  //  fprintf(stdout, "%s\n", test_string_words[i]);
-
-  // Print input from arrays (debugging)
-  // for (int i = 0; i < num_lines; i++)
-  //  fprintf(stdout, "Word: %49s  Spam Count: %d  Ham Count: %d\n",
-  //  dictionary_words[i],
-  //         spam_count[i], ham_count[i]);
-
-  // Print the test string (debugging)
-  // fprintf(stdout, "Test String:  %s\n", args.string);
-
-  // Print results
-  // TODO
+  double spam_score = exp(log_spam);
+  double ham_score = exp(log_ham);
+  double spam_prob = spam_score / (spam_score + ham_score);
+  
+  fprintf(out, "Spam probability: %.4lf\n", spam_prob);
+  fprintf(out, "Classification: %s\n", spam_prob > 0.5 ? "SPAM" : "HAM");
 
   safe_close(in);
   safe_close(out);
 
-  return 0;
+  return EXIT_SUCCESS;
 }

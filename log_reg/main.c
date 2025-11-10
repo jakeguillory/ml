@@ -10,25 +10,31 @@ int main(int argc, char *argv[]) {
   // Seed generator for random functions
   random_init();
 
-  // Handle arguments and files
-
   Args args;
+
   if (!parse_args(argc, argv, &args)) {
     fprintf(stderr,
             "Usage: %s [-i input] [-o output] [-e epochs] [-l learning_rate]\n",
             argv[0]);
+    return EXIT_FAILURE;
   }
 
   FILE *in = open_input_or_stdin(args.input_path);
   FILE *out = open_output_or_stdout(args.output_path);
 
   if (!in || !out) {
-    fprintf(stderr, "error opening files.\n");
+    fprintf(stderr, "Error: Could not open input or output.\n");
+    return EXIT_FAILURE;
   }
 
-  // Take in data and put into arrays
+  // Handle input data
   int num_lines;
-  fscanf(in, "%d", &num_lines);
+  if (fscanf(in, "%d", &num_lines) !=1) {
+      fprintf(stderr, "Error: Failed to read number of input lines. \n");
+      safe_close(in);
+      safe_close(out);
+      return EXIT_FAILURE;
+  }
 
   double features_a[num_lines];
   double features_b[num_lines];
